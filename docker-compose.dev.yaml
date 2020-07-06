@@ -1,0 +1,11 @@
+version: "3.7"
+
+services: 
+  web:
+    ports:
+      - 8081:80
+    volumes: 
+      - ./conf.dev.d:/etc/nginx/conf.d/
+      - ./public:/public/
+
+      
