@@ -1,2 +1,2 @@
 # Первый локальный тест
-GET http://localhost:8081/
+GET http://localhost:80/

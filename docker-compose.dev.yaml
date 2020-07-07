@@ -3,9 +3,13 @@ version: "3.7"
 services: 
   web:
     ports:
-      - 8081:80
+      - 80:80
     volumes: 
       - ./conf.dev.d:/etc/nginx/conf.d/
       - ./public:/public/
+      - ./certbot/data:/usr/share/nginx/html/letsencrypt
+
+  certbot:
+    command: certonly --dry-run --webroot -w /usr/share/nginx/html/letsencrypt -d dartservice.ru
 
       

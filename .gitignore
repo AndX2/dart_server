@@ -1,0 +1,4 @@
+/certbot/
+
+*.pem
+
