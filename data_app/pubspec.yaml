@@ -1,0 +1,24 @@
+name: data_app
+description: Серверное приложение данных проекта dartservice.ru
+version: 0.0.1
+author: AndX2
+
+environment:
+  sdk: ">=2.0.0 <3.0.0"
+
+dependencies:
+  aqueduct: 3.3.0+1
+  # контейнер DI
+  get_it: 4.0.4
+  # # декларативный кодегенератор для get_it
+  # injectable: 1.0.4
+
+dev_dependencies:
+  test: ^1.0.0
+  aqueduct_test: ^1.0.0
+  # # зависимости injectable этапа компиляции
+  # # использует пакет build_runner
+  # injectable_generator: 1.0.4
+  # build_runner: 1.10.0
+
+
