@@ -1,10 +1,10 @@
 version: "3.7"
 
-services: 
+services:
   web:
     ports:
       - 80:80
-    volumes: 
+    volumes:
       - ./conf.dev.d:/etc/nginx/conf.d/
       - ./public:/public/
       - ./certbot/data:/usr/share/nginx/html/letsencrypt
@@ -12,4 +12,11 @@ services:
   certbot:
     command: certonly --dry-run --webroot -w /usr/share/nginx/html/letsencrypt -d dartservice.ru
 
-      
+  # Контейнер приложения
+  data_app:
+    # Команда запуска приложения внутри контейнера
+    command: sh -c "cd /app && ./data_app.aot --port 8081 --isolates 6"
+    # Политика перезапуска при остановке приложения
+    # например при внутренней ошибке
+    restart: "no"
+

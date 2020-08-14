@@ -48,6 +48,7 @@ services:
       # Файлы подтверждения владения доменом, их необходимо сделать доступными по
       # http://dartservice.ru/.well-known/acme-challenge/
       - ./certbot/data:/usr/share/nginx/html/letsencrypt
+
   # Контейнер приложения
   data_app:
     # Собрать Docker образ в папке ./data_app/ Будет использован Dockerfile
@@ -59,4 +60,4 @@ services:
     env_file:
       - data_app.env
     # Команда запуска приложения внутри контейнера
-    command: pub run aqueduct:aqueduct serve --port 8080 --isolates 6
+    command: pub run aqueduct:aqueduct serve --port 8081 --isolates 1
