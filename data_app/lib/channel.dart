@@ -1,6 +1,5 @@
 import 'package:data_app/controller/routes.dart';
 import 'package:data_app/di/di_container.dart';
-import 'package:data_app/service/db_helper.dart';
 
 import 'data_app.dart';
 

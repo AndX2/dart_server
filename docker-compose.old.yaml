@@ -51,35 +51,15 @@ services:
 
   # Контейнер приложения
   data_app:
-    # Используем образ с Ubuntu 20_10
-    image: ubuntu:20.10
-    # Монтируем в файловую систему контейнера скомпилированную сборку приложения
-    volumes:
-      - ./data_app/data_app.aot:/app/data_app.aot
+    # Собрать Docker образ в папке ./data_app/ Будет использован Dockerfile
+    # находящийся в корне этой папки
+    build: ./data_app/
     # Файл с переменными конфигурации, которые будут записаны при запуске
     # ОС в контейнере (можно передать переменные и просто в этом сценарии,
     # но лучше конфиг запуска поместить в отдельный файл)
     env_file:
       - data_app.env
     # Команда запуска приложения внутри контейнера
-    command: sh -c "cd /app && ./data_app.aot --port 8081 --isolates 1"
-    # Политика перезапуска при остановке приложения
-    # например при внутренней ошибке
-    restart: "no"
-    depends_on:
-      - data_db
+    command: pub run aqueduct:aqueduct serve --port 8081 --isolates 1
 
-  # Контейнер с DB
-  data_db:
-    # Загружаемый образ
-    image: postgres:12.3-alpine
-    # Название контейнера
-    container_name: "postgres_data"
-    # Файл с переменными окружения
-    env_file:
-      - data_db.env
-    # Монтируем папку для файлов базы данных в контейнер
-    volumes:
-      - ./data_db/:/var/lib/postgresql/data/
-    restart: "no"
-
+    

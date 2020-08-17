@@ -14,10 +14,15 @@ services:
     command: >
       sh -c "cd /app && pub get && sleep 30 && 
             aqueduct db upgrade --connect postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${DB_HOST}:${DB_PORT}/${POSTGRES_DB}"
-    depends_on:
-      - data_db
+    # Ограничения на использование ресурсов хоста. Внимание: применяется только с флагом обратной совместимости
+    # иначе - игнорируется
+    deploy:
+      resources:
+        limits:        
+          cpus: '0.5'
+          memory: 200M    
 
-    # Контейнер с ДБ
+  # Контейнер с ДБ
   data_db:
     # Загружаемый образ
     image: postgres:12.3-alpine
@@ -30,3 +35,4 @@ services:
     volumes:
       - ./data_db/:/var/lib/postgresql/data/
     restart: "no"
+    

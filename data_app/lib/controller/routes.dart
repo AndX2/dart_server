@@ -17,7 +17,10 @@ class Routes {
   /// Создание и инициализация маршрутизатора
   static Router createRouter() {
     final router = Router();
-    router.route(actuator).link(() => ActuatorController());
+    router
+        .route(actuator)
+        .linkFunction((request) => Response.unauthorized())
+        .link(() => ActuatorController());
     router.route(stubSetting).link(() => getIt.get<StubSettingController>());
     return router;
   }

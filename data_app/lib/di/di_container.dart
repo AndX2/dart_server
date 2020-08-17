@@ -1,12 +1,11 @@
 import 'dart:async';
+import 'package:get_it/get_it.dart';
 
 import 'package:data_app/controller/stub_setting_controller.dart';
 import 'package:data_app/data_app.dart';
 import 'package:data_app/repository/stub_setting/stub_setting_repository.dart';
 import 'package:data_app/service/db_helper.dart';
 import 'package:data_app/service/stub_setting/stub_service.dart';
-import 'package:get_it/get_it.dart';
-
 import 'package:data_app/repository/env/env_repository.dart';
 import 'package:data_app/service/env_service.dart';
 
