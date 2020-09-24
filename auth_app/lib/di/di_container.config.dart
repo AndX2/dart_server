@@ -13,6 +13,7 @@ import '../service/db_helper.dart';
 import '../repository/env/env_repository.dart';
 import '../service/env_service.dart';
 import '../repository/http_client.dart';
+import '../provider/state_generator.dart';
 import '../provider/vk/vk_provider.dart';
 
 /// adds generated dependencies
@@ -28,6 +29,7 @@ GetIt $initGetIt(
   gh.factory<ActuatorController>(() => ActuatorController());
   gh.factory<Dio>(() => registerHttpClient.createhttpClient());
   gh.factory<EnvironmentRepository>(() => EnvironmentRepository());
+  gh.factory<StateGenerator>(() => StateGenerator());
   gh.factory<VkAuthProvider>(
       () => VkAuthProvider(get<EnvironmentService>(), get<Dio>()));
 
