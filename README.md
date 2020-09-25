@@ -54,4 +54,11 @@ docker login
 docker push andx2/aqueduct:4.0.0-b1
 ```
 
+### Native builder
+
+```
+<!-- Генерация графа DI контейнера -->
+pub run build_runner watch --delete-conflicting-outputs
+```
+
 

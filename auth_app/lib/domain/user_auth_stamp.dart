@@ -1,37 +1,37 @@
-import 'package:auth_app/provider/oauth_provider.dart';
+import 'package:auth_app/auth_app.dart';
+
+class UserAuthStamp extends ManagedObject<_UserAuthStamp>
+    implements _UserAuthStamp {
+  @override
+  void willInsert() {
+    created = DateTime.now();
+    super.willInsert();
+  }
+}
 
 /// Данные об аутентифиациии пользователя через сторонний сервис
-class UserAuthStamp {
+@Table(name: 'user_auth_stamp')
+class _UserAuthStamp {
+  @primaryKey
+  int key;
+
   /// Провайдер аутентификации пользователя
-  final String provider;
+  @Column()
+  String provider;
 
   /// ID пользователя в системе провайдера
-  final String id;
+  @Column()
+  String id;
 
   /// Токен доступа к данным о пользователе
-  final String accessToken;
+  @Column()
+  String accessToken;
 
   /// Идентификатор сессии авторизации
-  final String state;
+  @Column()
+  String state;
 
-  UserAuthStamp({
-    this.provider,
-    this.id,
-    this.accessToken,
-    this.state,
-  });
-
-  UserAuthStamp copyWith({
-    final String provider,
-    String id,
-    String accessToken,
-    String state,
-  }) {
-    return UserAuthStamp(
-      provider: provider ?? this.provider,
-      id: id ?? this.id,
-      accessToken: accessToken ?? this.accessToken,
-      state: state ?? this.state,
-    );
-  }
+  /// Дата и время создания
+  @Column()
+  DateTime created;
 }

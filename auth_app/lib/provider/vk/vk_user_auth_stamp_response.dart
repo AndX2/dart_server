@@ -12,9 +12,8 @@ class VkUserAuthStampResponse {
   }
 
   UserAuthStamp transform() {
-    return UserAuthStamp(
-      accessToken: accessToken,
-      id: userId,
-    );
+    return UserAuthStamp()
+      ..accessToken = accessToken
+      ..id = userId;
   }
 }

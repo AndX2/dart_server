@@ -4,17 +4,13 @@ import 'package:injectable/injectable.dart';
 
 /// Класс для подключения к базе данных, используя переменные
 /// окружения
-@singleton
-class DbHelper {
-  final EnvironmentService _environmentService;
-
-  DbHelper(this._environmentService);
-
+@module
+abstract class DbHelper {
   /// Возвращает объект контекста соединения с БД
   /// на котором выполняются запросы
-  ManagedContext get managedContext {
+  ManagedContext managedContext(EnvironmentService environmentService) {
     final dataModel = ManagedDataModel.fromCurrentMirrorSystem();
-    final _env = _environmentService.getEnvironmentMap();
+    final _env = environmentService.getEnvironmentMap();
     final psc = PostgreSQLPersistentStore.fromConnectionInfo(
       _env['POSTGRES_USER'],
       _env['POSTGRES_PASSWORD'],

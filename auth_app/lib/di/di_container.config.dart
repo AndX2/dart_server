@@ -12,8 +12,11 @@ import '../controller/actuator_controller.dart';
 import '../service/db_helper.dart';
 import '../repository/env/env_repository.dart';
 import '../service/env_service.dart';
+import '../repository/login/login_repository.dart';
+import '../service/login_service.dart';
+import '../auth_app.dart';
 import '../repository/http_client.dart';
-import '../provider/state_generator.dart';
+import '../repository/state_generator.dart';
 import '../provider/vk/vk_provider.dart';
 
 /// adds generated dependencies
@@ -26,18 +29,25 @@ GetIt $initGetIt(
 }) {
   final gh = GetItHelper(get, environment, environmentFilter);
   final registerHttpClient = _$RegisterHttpClient();
+  final dbHelper = _$DbHelper();
   gh.factory<ActuatorController>(() => ActuatorController());
   gh.factory<Dio>(() => registerHttpClient.createhttpClient());
   gh.factory<EnvironmentRepository>(() => EnvironmentRepository());
+  gh.factory<ManagedContext>(
+      () => dbHelper.managedContext(get<EnvironmentService>()));
   gh.factory<StateGenerator>(() => StateGenerator());
   gh.factory<VkAuthProvider>(
       () => VkAuthProvider(get<EnvironmentService>(), get<Dio>()));
+  gh.factory<LoginRepository>(() => LoginRepository(get<ManagedContext>()));
 
   // Eager singletons must be registered in the right order
   gh.singleton<EnvironmentService>(
       EnvironmentService(get<EnvironmentRepository>()));
-  gh.singleton<DbHelper>(DbHelper(get<EnvironmentService>()));
+  gh.singleton<LoginService>(
+      LoginService(get<LoginRepository>(), get<StateGenerator>()));
   return get;
 }
 
 class _$RegisterHttpClient extends RegisterHttpClient {}
+
+class _$DbHelper extends DbHelper {}

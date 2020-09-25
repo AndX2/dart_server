@@ -43,7 +43,9 @@ class VkAuthProvider implements OAuthProvider {
           (response) =>
               VkUserAuthStampResponse.fromJson(response.data).transform(),
         );
-    return authStamp.copyWith(provider: name, state: state);
+    return authStamp
+      ..provider = name
+      ..state = state;
   }
 
   @override
