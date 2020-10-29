@@ -1,4 +1,5 @@
 import 'package:auth_app/auth_app.dart';
+import 'package:auth_app/domain/user.dart';
 
 class UserAuthStamp extends ManagedObject<_UserAuthStamp>
     implements _UserAuthStamp {
@@ -34,4 +35,11 @@ class _UserAuthStamp {
   /// Дата и время создания
   @Column()
   DateTime created;
+
+  @Relate(
+    #stampList,
+    isRequired: false,
+    onDelete: DeleteRule.cascade,
+  )
+  User user;
 }

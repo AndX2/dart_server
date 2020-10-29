@@ -9,4 +9,11 @@ import 'package:injectable/injectable.dart';
 final GetIt getIt = GetIt.instance;
 
 @InjectableInit()
-Future initDi() async => $initGetIt(getIt);
+Future initDi() async {
+  if (!getIt.isRegistered<Router>())
+    await $initGetIt(
+      getIt,
+      environmentFilter: NoEnvOrContains(Environment.prod),
+    );
+  // await $initGetIt(getIt);
+}

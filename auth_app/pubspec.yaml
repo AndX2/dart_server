@@ -4,7 +4,7 @@ version: 0.0.1
 author: stable|kernel <jobs@stablekernel.com>
 
 environment:
-  sdk: ">=2.0.0 <3.0.0"
+  sdk: ">=2.3.0 <3.0.0"
 
 dependencies:
   aqueduct: 4.0.0-b1
@@ -15,7 +15,7 @@ dependencies:
   # http клиент
   dio: 3.0.10
   # jwt helper
-  jose: 0.2.1+1
+  corsac_jwt: 0.2.2
   # генератор идентификаторов
   uuid: 2.2.2
 
@@ -26,3 +26,5 @@ dev_dependencies:
   # использует пакет build_runner
   injectable_generator: 1.0.4
   build_runner: 1.10.0
+  # профилирование
+  benchmark_harness: 1.0.5

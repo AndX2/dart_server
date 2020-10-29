@@ -22,13 +22,14 @@ class LoginRepository {
   }
 
   Future<State> addState(State state) async {
-    final created = _context.insertObject<State>(state);
-    return created;
+    // final created = _context.insertObject<State>(state);
+    // return created;
+    return state;
   }
 
   Future<State> getStateByValue(String value) async {
     final query = Query<State>(_context)..where((item) => item.value == value);
-    final state = query.fetchOne();
+    final state = await query.fetchOne();
     return state;
   }
 }

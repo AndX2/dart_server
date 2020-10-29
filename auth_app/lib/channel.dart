@@ -1,5 +1,4 @@
 import 'package:auth_app/auth_app.dart';
-import 'package:auth_app/controller/routes.dart';
 import 'package:auth_app/di/di_container.dart';
 
 /// This type initializes an application.
@@ -15,5 +14,5 @@ class AuthAppChannel extends ApplicationChannel {
 
   /// Настройка маршрутизатора приложения
   @override
-  Controller get entryPoint => Routes.createRouter();
+  Controller get entryPoint => getIt.get<Router>();
 }

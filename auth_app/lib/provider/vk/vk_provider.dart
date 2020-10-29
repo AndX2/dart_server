@@ -4,32 +4,77 @@ import 'package:auth_app/domain/user_auth_stamp.dart';
 import 'package:aqueduct/src/http/response.dart';
 import 'package:auth_app/provider/oauth_provider.dart';
 import 'package:auth_app/provider/vk/vk_user_auth_stamp_response.dart';
-import 'package:auth_app/service/env_service.dart';
+import 'package:auth_app/service/login_service.dart';
 import 'package:dio/dio.dart' hide Response;
-import 'package:injectable/injectable.dart';
 
-const _partnerIdEnvKey = 'VK_PARTNER_ID';
-const _partnerSecretEnvKey = 'VK_PARTNER_SECRET';
-const _oauthUrl = 'https://oauth.vk.com';
-const _loginPath = '/authorize';
-const _redirectUrl = 'http://dartservice.ru/auth/vk/redirect';
-const _getUserPath = '/access_token';
-const _successAuthWebRedirectUrl =
-    'http://dartservice.ru/#/vk/auth?result=true';
-
-@injectable
 class VkAuthProvider implements OAuthProvider {
-  final EnvironmentService _environmentService;
   final Dio _httpClient;
+  final LoginService _loginService;
+  final String _partnerId;
+  final String _partnerSecret;
+  final String _oauthUrl;
+  final String _loginPath;
+  final String _redirectUrl;
+  final String _getUserPath;
+  final String _successAuthWebRedirectUrl;
 
   VkAuthProvider(
-    this._environmentService,
     this._httpClient,
+    this._loginService,
+    this._partnerId,
+    this._partnerSecret,
+    this._oauthUrl,
+    this._loginPath,
+    this._redirectUrl,
+    this._getUserPath,
+    this._successAuthWebRedirectUrl,
   );
 
   @override
+  String get name => 'vk';
+
+  @override
+  String get partnerId => _partnerId;
+
+  @override
+  String get partnerSecret => _partnerSecret;
+
+  @override
+  @Operation.get()
+  Future<Response> redirectHandler(Request request) async {
+    final params = request.raw.uri.queryParameters;
+    final state = params['state'];
+    final code = params['code'];
+    await _loginService.validateState(state);
+    final user = await _loginService.getUserAuthStamp(this, code, state);
+    return Response(
+      303,
+      {'Location': successClientRedirectUrl},
+      null,
+    );
+  }
+
+  @override
+  String get serviceRedirectUrl => _redirectUrl;
+
+  @override
+  String get successClientRedirectUrl => _successAuthWebRedirectUrl;
+
+  @override
+  @Operation.get()
+  Future<Response> getLoginUrl(Request request) async {
+    final state = await _loginService.generateLoginState();
+    final loginUrl = _buildLoginUrl(state);
+    return Response(
+      303,
+      {'Location': loginUrl},
+      null,
+    );
+  }
+
+  @override
   Future<UserAuthStamp> getUserAuthStamp(String code, String state) async {
-    const url = '$_oauthUrl$_getUserPath';
+    final url = Uri.https(_oauthUrl, _getUserPath).toString();
     final authStamp = await _httpClient
         .get(url,
             queryParameters: {
@@ -48,11 +93,12 @@ class VkAuthProvider implements OAuthProvider {
       ..state = state;
   }
 
-  @override
-  String getloginUrl(String state) => Uri.http(
+  String _buildLoginUrl(String state) => Uri.https(
         _oauthUrl,
         _loginPath,
         {
+          'client_id': partnerId,
+          'display': 'popup',
           'redirect_uri': serviceRedirectUrl,
           'scope': 'email',
           'response_type': 'code',
@@ -60,42 +106,4 @@ class VkAuthProvider implements OAuthProvider {
           'state': state
         },
       ).toString();
-
-  @override
-  String get name => 'VK';
-
-  @override
-  String get partnerId => _environmentService.getEnvironment(partnerIdEnvKey);
-
-  @override
-  String get partnerIdEnvKey => _partnerIdEnvKey;
-
-  @override
-  String get partnerSecret =>
-      _environmentService.getEnvironment(partnerSecretEnvKey);
-
-  @override
-  String get partnerSecretEnvKey => _partnerSecretEnvKey;
-
-  @override
-  @Operation.get('vk/redirect')
-  Future<Response> redirectHandler(Request request) async {
-    final params = request.raw.uri.queryParameters;
-    final state = params['state'];
-    final code = params['code'];
-    //TODO: проверить state по базе на предмет истечения срока действия или
-    //уже использован
-    if (state.isEmpty) {
-      return Response.notFound();
-    }
-    final userStamp = await getUserAuthStamp(code, state);
-    //TODO: сохранить авторизацию пользователя
-    return Response.accepted();
-  }
-
-  @override
-  String get serviceRedirectUrl => _redirectUrl;
-
-  @override
-  String get successClientRedirectUrl => _successAuthWebRedirectUrl;
 }
