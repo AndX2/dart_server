@@ -27,7 +27,7 @@ class User extends ManagedObject<_User> implements _User {
   }
 }
 
-@Table(name: 'user')
+@Table(name: 'table_user')
 class _User {
   @primaryKey
   int id;

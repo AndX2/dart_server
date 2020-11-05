@@ -3,6 +3,7 @@
 *.pem
 
 /data_db/
+/auth_db/
 
 
-*/.env
+*/*.env

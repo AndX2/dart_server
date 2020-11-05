@@ -58,7 +58,7 @@ services:
     # ОС в контейнере (можно передать переменные и просто в этом сценарии,
     # но лучше конфиг запуска поместить в отдельный файл)
     env_file:
-      - data_app.env
+      - ./env/data_app.env
     # Команда запуска приложения внутри контейнера
     command: pub run aqueduct:aqueduct serve --port 8081 --isolates 1
 

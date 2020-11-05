@@ -1,0 +1,38 @@
+version: "3.7"
+
+services:
+  # Название контейнера
+  migrator:
+    # Используем образ
+    image: andx2/aqueduct:4.0.0-b1
+    # Монтируем папку aqueduct приложения в контейнер /app
+    volumes:
+      - ./auth_app:/app
+    # Переходим в папку проекта - скачиваем зависимости - ждем
+    # запуска контейнера с БД затем выполняем подключение к БД
+    # и миграцию схемы
+    command: >
+      sh -c "cd /app && pub get && sleep 30 && 
+            aqueduct db upgrade --connect postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${DB_HOST}:${DB_PORT}/${POSTGRES_DB}"
+    # # Ограничения на использование ресурсов хоста. Внимание: применяется только с флагом обратной совместимости
+    # # иначе - игнорируется
+    # deploy:
+    #   resources:
+    #     limits:        
+    #       cpus: '0.5'
+    #       memory: 200M    
+
+  # Контейнер с ДБ
+  auth_db:
+    # Загружаемый образ
+    image: postgres:12.3-alpine
+    # Название контейнера
+    container_name: "postgres_auth"
+    # Файл с переменными окружения
+    env_file:
+      - ./env/auth_db.env
+    # Монтируем папку для файлов базы данных в контейнер
+    volumes:
+      - ./auth_db/:/var/lib/postgresql/data/
+    restart: "no"
+    

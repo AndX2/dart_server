@@ -8,6 +8,7 @@ class State extends ManagedObject<_State> implements _State {
   }
 }
 
+@Table(name: 'state')
 class _State {
   @primaryKey
   int key;

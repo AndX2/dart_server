@@ -14,7 +14,7 @@ class Profile extends ManagedObject<_Profile> implements _Profile {
   }
 }
 
-@Table(name: 'user')
+@Table(name: 'profile')
 class _Profile {
   @primaryKey
   int id;

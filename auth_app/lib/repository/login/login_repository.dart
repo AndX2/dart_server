@@ -22,9 +22,8 @@ class LoginRepository {
   }
 
   Future<State> addState(State state) async {
-    // final created = _context.insertObject<State>(state);
-    // return created;
-    return state;
+    final created = _context.insertObject<State>(state);
+    return created;
   }
 
   Future<State> getStateByValue(String value) async {

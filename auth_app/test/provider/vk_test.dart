@@ -1,7 +1,10 @@
+import '../di_test.dart';
 import '../harness/app.dart';
 
 Future main() async {
   final harness = Harness()..install();
+
+  setUpAll(() => initTestDi());
 
   group(
     "vk provider group test",

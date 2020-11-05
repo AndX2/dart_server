@@ -1,8 +1,9 @@
 ### autocanon
+
 <!-- Нагрузочное тестирование -->
 https://github.com/mcollina/autocannon#install
 
-```
+``` 
 <!-- Установка -->
 npm i autocannon -g
 <!-- Запуск (100 соединений 60 секунд) -->
@@ -11,7 +12,7 @@ autocannon -c 100 -d 60 http://localhost:80/api/actuator
 
 ### Aqueduct
 
-```
+``` 
 <!-- Установка -->
 pub global activate aqueduct 4.0.0-b1
 <!-- Удаление -->
@@ -27,12 +28,16 @@ data_app.aot --port 8080 --isolates 2
 <!-- Создать файл миграции БД -->
 aqueduct db generate
 <!-- Применить файл миграции -->
-docker-compose -f docker-compose.migrations.yaml --env-file=./data_app.env --compatibility up --abort-on-container-exit
+docker-compose -f docker-compose.migrations.yaml --env-file=./env/data_app.env --compatibility up --abort-on-container-exit
+<!-- Применить файл миграции бд авторизации-->
+docker-compose -f docker-compose.migrations_auth.yaml --env-file=./env/auth_app.env --compatibility up --abort-on-container-exit
+<!-- Сборка нативных артефактов -->
+docker-compose -f docker-compose.dev.build.yaml up
 ```
 
 ### Запуск отладки
 
-```
+``` 
 <!-- JIT -->
 docker-compose -f docker-compose.old.yaml -f docker-compose.dev.yaml up --build -d
 <!-- AOT -->
@@ -41,7 +46,7 @@ docker-compose -f docker-compose.yaml -f docker-compose.dev.yaml up --build -d
 
 ### Native builder
 
-```
+``` 
 <!-- Собрать образ -->
 docker build --pull --rm -f "dart2native\Dockerfile" -t aqueduct_builder:4.0.0-b1 "dart2native"
 <!-- Список образов -->
@@ -56,9 +61,7 @@ docker push andx2/aqueduct:4.0.0-b1
 
 ### Dev
 
-```
+``` 
 <!-- Генерация графа DI контейнера -->
 pub run build_runner watch --delete-conflicting-outputs
 ```
-
-
