@@ -32,14 +32,14 @@ docker-compose -f docker-compose.migrations.yaml --env-file=./env/data_app.env -
 <!-- Применить файл миграции бд авторизации-->
 docker-compose -f docker-compose.migrations_auth.yaml --env-file=./env/auth_app.env --compatibility up --abort-on-container-exit
 <!-- Сборка нативных артефактов -->
-docker-compose -f docker-compose.dev.build.yaml up
+(docker-compose -f docker-compose.dev.build.yaml up --build && cd auth_app && pub get && cd ../data_app && pub get && cd ..)
 ```
 
 ### Запуск отладки
 
 ``` 
 <!-- JIT -->
-docker-compose -f docker-compose.old.yaml -f docker-compose.dev.yaml up --build -d
+docker-compose -f docker-compose.yaml -f docker-compose.dev.jit.yaml up --build -d
 <!-- AOT -->
 docker-compose -f docker-compose.yaml -f docker-compose.dev.yaml up --build -d
 ```

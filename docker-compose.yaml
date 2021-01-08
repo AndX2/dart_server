@@ -40,6 +40,8 @@ services:
   certbot:
     # Образ приложения из DockerHub
     image: certbot/certbot:v1.5.0
+    # Название контейнера
+    container_name: "certbot"
     # Команда, выполняемая после запуска контейнера
     command: certonly --webroot --webroot-path=/usr/share/nginx/html/letsencrypt --email admin@email.com --agree-tos --no-eff-email -d dartservice.ru
     # Смонтированные тома файловой системы
@@ -98,14 +100,15 @@ services:
     container_name: "auth_app"
     # Монтируем в файловую систему контейнера скомпилированную сборку приложения
     volumes:
-      - ./auth_app/auth_app.aot:/auth_app/auth_app.aot
+      - ./auth_app/auth_app.aot:/app/auth_app.aot
     # Файл с переменными конфигурации, которые будут записаны при запуске
     # ОС в контейнере (можно передать переменные и просто в этом сценарии,
     # но лучше конфиг запуска поместить в отдельный файл)
     env_file:
       - ./env/auth_app.env
+      - ./env/rsa_key.env
     # Команда запуска приложения внутри контейнера
-    command: sh -c "cd /app && ./data_app.aot --port 8081 --isolates 1"
+    command: sh -c "cd /app && ./auth_app.aot --port 8082 --isolates 1"
     # Политика перезапуска при остановке приложения
     # например при внутренней ошибке
     restart: "no"
@@ -124,4 +127,17 @@ services:
     # Монтируем папку для файлов базы данных в контейнер
     volumes:
       - ./auth_db/:/var/lib/postgresql/data/
+    restart: "no"
+
+  # Контейнер с DB авторизации
+  redis:
+    # Загружаемый образ
+    image: redis:6.0.9-alpine3.12
+    # Название контейнера
+    container_name: "redis_cache"
+    entrypoint: redis-server /usr/local/etc/redis/redis.conf
+    # Монтируем папку для файла конфигурации в контейнер
+    volumes:
+      - ./redis/redis.conf:/usr/local/etc/redis/redis.conf
+      - ./redis/data/:/data/
     restart: "no"

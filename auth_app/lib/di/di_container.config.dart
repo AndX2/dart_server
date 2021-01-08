@@ -14,11 +14,13 @@ import '../service/cred_service.dart';
 import '../service/db_helper.dart';
 import '../repository/env/env_repository.dart';
 import '../service/env_service.dart';
-import '../repository/jwt_generator.dart';
+import '../repository/jwt/jwt_generator.dart';
+import '../controller/login_controller.dart';
 import '../repository/login/login_repository.dart';
 import '../service/login_service.dart';
 import '../service/oauth_provider_factory.dart';
 import '../repository/http_client.dart';
+import '../repository/jwt/jwt_generator_register.dart';
 import '../controller/routes.dart';
 import '../auth_app.dart';
 import '../repository/state_generator.dart';
@@ -36,30 +38,41 @@ GetIt $initGetIt(
 }) {
   final gh = GetItHelper(get, environment, environmentFilter);
   final registerHttpClient = _$RegisterHttpClient();
+  final registerJwtGenerator = _$RegisterJwtGenerator();
   final dbHelper = _$DbHelper();
   final registerRouter = _$RegisterRouter();
   gh.factory<ActuatorController>(() => ActuatorController());
-  gh.factory<Dio>(() => registerHttpClient.createhttpClient());
+  gh.factory<Dio>(() => registerHttpClient.createHttpClient());
   gh.factory<EnvironmentRepository>(() => EnvironmentRepository());
-  gh.factory<JwtGenerator>(() => JwtGenerator());
+  gh.factory<JwtGenerator>(
+      () => registerJwtGenerator.createGenerator(get<EnvironmentService>()));
   gh.factory<ManagedContext>(
       () => dbHelper.managedContext(get<EnvironmentService>()));
   gh.factory<StateGenerator>(() => StateGenerator());
   gh.factory<CredentialRepository>(
       () => CredentialRepository(get<ManagedContext>(), get<StateGenerator>()));
+  gh.factory<LoginController>(
+      () => LoginController(get<CredentionalService>()));
   gh.factory<LoginRepository>(() => LoginRepository(get<ManagedContext>()));
   gh.factory<OauthProviderFactory>(
-      () =>
-          OauthProviderFactory(get<EnvironmentService>(), get<LoginService>()),
+      () => OauthProviderFactory(
+            get<EnvironmentService>(),
+            get<LoginService>(),
+            get<CredentionalService>(),
+          ),
       registerFor: {_prod});
-  gh.factory<Router>(
-      () => registerRouter.createRouter(get<OauthProviderFactory>()));
+  gh.factory<Router>(() => registerRouter.createRouter(
+      get<OauthProviderFactory>(), get<LoginController>()));
 
   // Eager singletons must be registered in the right order
   gh.singleton<EnvironmentService>(
       EnvironmentService(get<EnvironmentRepository>()));
-  gh.singleton<CredentionalService>(
-      CredentionalService(get<EnvironmentService>()));
+  gh.singleton<CredentionalService>(CredentionalService(
+    get<EnvironmentService>(),
+    get<CredentialRepository>(),
+    get<JwtGenerator>(),
+    get<StateGenerator>(),
+  ));
   gh.singleton<LoginService>(
       LoginService(
         get<LoginRepository>(),
@@ -71,6 +84,8 @@ GetIt $initGetIt(
 }
 
 class _$RegisterHttpClient extends RegisterHttpClient {}
+
+class _$RegisterJwtGenerator extends RegisterJwtGenerator {}
 
 class _$DbHelper extends DbHelper {}
 

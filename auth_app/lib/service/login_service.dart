@@ -48,7 +48,9 @@ class LoginService {
     String code,
     String state,
   ) async {
-    final stamp = await provider.getUserAuthStamp(code, state);
+    final stamp = await provider.getUserAuthStamp(code, state).catchError((e) {
+      throw e;
+    });
     final existUser = await _credentialRepository.getUserByProviderId(
       provider.name,
       stamp.id,

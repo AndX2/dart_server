@@ -27,7 +27,8 @@ class LoginRepository {
   }
 
   Future<State> getStateByValue(String value) async {
-    final query = Query<State>(_context)..where((item) => item.value == value);
+    final query = Query<State>(_context)
+      ..where((item) => item.value).equalTo(value);
     final state = await query.fetchOne();
     return state;
   }

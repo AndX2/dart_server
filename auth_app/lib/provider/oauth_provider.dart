@@ -24,6 +24,6 @@ abstract class OAuthProvider {
   /// Метод для получения данных об авторизовавшемся клиенте
   Future<UserAuthStamp> getUserAuthStamp(String code, String state);
 
-  ///redirect_uri=http://dartservice.ru/#/vk/auth?result=true
+  ///redirect_uri=http://dartservice.ru/#/auth/vk?result=true
   String get successClientRedirectUrl;
 }

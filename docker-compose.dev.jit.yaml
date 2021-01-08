@@ -1,0 +1,53 @@
+version: "3.7"
+
+services:
+  web:
+    ports:
+      - 80:80
+    volumes:
+      - ./conf.dev.d:/etc/nginx/conf.d/
+      - ./public:/public/
+      - ./certbot/data:/usr/share/nginx/html/letsencrypt
+
+  certbot:
+    command: certonly --dry-run --webroot -w /usr/share/nginx/html/letsencrypt -d dartservice.ru
+
+  # Контейнер приложения
+  data_app:
+    # Команда запуска приложения внутри контейнера
+    command: sh -c "cd /app && ./data_app.aot --port 8081 --isolates 6"
+    # Политика перезапуска при остановке приложения
+    # например при внутренней ошибке
+    restart: "no"
+
+  # Контейнер приложения авторизации
+  auth_app:
+    # Используем образ
+    image: andx2/aqueduct:4.0.0-b1
+    # Название контейнера
+    container_name: "auth_app"
+    # Монтируем в файловую систему контейнера сборку приложения
+    volumes:
+      - ./auth_app/:/app/
+    # Команда запуска приложения внутри контейнера
+    command: sh -c "cd /app && pub get && pub run aqueduct:aqueduct serve --port 8082 --isolates 6"
+    # Политика перезапуска при остановке приложения
+    restart: "no"
+
+    # Контейнер с DB
+  data_db:
+    # Порт открываемый для доступа хоста
+    ports:
+      - "5432:5432"
+
+  # Контейнер с DB авторизации
+  auth_db:
+    # Порт открываемый для доступа хоста
+    ports:
+      - "5433:5432"
+
+  # Контейнер с Redis
+  redis:
+    # Порт открываемый для доступа хоста
+    ports:
+      - "6379:6379"

@@ -1,5 +1,4 @@
 import 'package:auth_app/auth_app.dart';
-import 'package:auth_app/domain/profile.dart';
 import 'package:auth_app/domain/refresh_token.dart';
 import 'package:auth_app/domain/user_auth_stamp.dart';
 import 'package:auth_app/repository/state_generator.dart';
@@ -44,6 +43,4 @@ class _User {
   ManagedSet<UserAuthStamp> stampList;
 
   ManagedSet<RefreshToken> tokenList;
-
-  Profile profile;
 }

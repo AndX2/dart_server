@@ -3,6 +3,7 @@ version: "3.7"
 services:
   # Название контейнера
   aot_builder:
+    container_name: "aot_builder"
     # Используем образ
     image: andx2/aqueduct:4.0.0-b1
     # Монтируем папку aqueduct приложения в контейнер /app

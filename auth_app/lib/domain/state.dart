@@ -13,7 +13,7 @@ class _State {
   @primaryKey
   int key;
 
-  @Column()
+  @Column(indexed: true)
   String value;
 
   @Column()

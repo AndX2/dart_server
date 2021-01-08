@@ -1,4 +1,5 @@
 import 'package:auth_app/auth_app.dart';
+import 'package:auth_app/domain/refresh_token.dart';
 import 'package:auth_app/domain/user.dart';
 import 'package:auth_app/domain/user_auth_stamp.dart';
 import 'package:auth_app/repository/state_generator.dart';
@@ -29,5 +30,21 @@ class CredentialRepository {
     final query = Query<User>(_context);
     final savedUser = await query.insert();
     return savedUser;
+  }
+
+  Future<RefreshToken> removeRefreshTokenByValue(String value) async {
+    final query = Query<RefreshToken>(_context)
+      ..where((token) => token.value).equalTo(value)
+      ..join(object: (t) => t.user);
+    final existToken = await query.fetchOne();
+    await query.delete();
+    return existToken;
+  }
+
+  Future<RefreshToken> saveRefreshToken(User user, String token) async {
+    final query = Query<RefreshToken>(_context)
+      ..values.value = token
+      ..values.user.id = user.id;
+    return await query.insert();
   }
 }

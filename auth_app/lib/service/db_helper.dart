@@ -18,6 +18,13 @@ abstract class DbHelper {
       int.tryParse(_env['DB_PORT'] ?? '5432'),
       _env['POSTGRES_DB'],
     );
+    // final psc = PostgreSQLPersistentStore.fromConnectionInfo(
+    //   'postgres',
+    //   'gGNLwYtVGDm44b67l_8OBcRpURZVGv',
+    //   'localhost',
+    //   5433,
+    //   'auth_app',
+    // );
 
     return ManagedContext(dataModel, psc);
   }

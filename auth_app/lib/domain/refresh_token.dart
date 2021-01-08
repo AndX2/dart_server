@@ -33,3 +33,10 @@ class _RefreshToken {
   )
   User user;
 }
+
+class TokenPair {
+  final RefreshToken refreshToken;
+  final String accessToken;
+
+  TokenPair(this.refreshToken, this.accessToken);
+}

@@ -9,9 +9,9 @@ environment:
 dependencies:
   aqueduct: 4.0.0-b1
   # контейнер DI
-  get_it: 4.0.4
+  get_it: 5.0.3
   # декларативный кодегенератор для get_it
-  injectable: 1.0.4
+  injectable: 1.0.5
   # http клиент
   dio: 3.0.10
   # jwt helper
@@ -24,7 +24,8 @@ dev_dependencies:
   aqueduct_test: 2.0.0-b1
   # зависимости injectable этапа компиляции
   # использует пакет build_runner
-  injectable_generator: 1.0.4
+  injectable_generator: 1.0.5
   build_runner: 1.10.0
   # профилирование
   benchmark_harness: 1.0.5
+  dotenv: ^2.0.0

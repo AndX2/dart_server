@@ -4,12 +4,14 @@ import 'package:auth_app/domain/user_auth_stamp.dart';
 import 'package:aqueduct/src/http/response.dart';
 import 'package:auth_app/provider/oauth_provider.dart';
 import 'package:auth_app/provider/vk/vk_user_auth_stamp_response.dart';
+import 'package:auth_app/service/cred_service.dart';
 import 'package:auth_app/service/login_service.dart';
 import 'package:dio/dio.dart' hide Response;
 
 class VkAuthProvider implements OAuthProvider {
   final Dio _httpClient;
   final LoginService _loginService;
+  final CredentionalService _credentionalService;
   final String _partnerId;
   final String _partnerSecret;
   final String _oauthUrl;
@@ -21,6 +23,7 @@ class VkAuthProvider implements OAuthProvider {
   VkAuthProvider(
     this._httpClient,
     this._loginService,
+    this._credentionalService,
     this._partnerId,
     this._partnerSecret,
     this._oauthUrl,
@@ -40,25 +43,45 @@ class VkAuthProvider implements OAuthProvider {
   String get partnerSecret => _partnerSecret;
 
   @override
+  String get serviceRedirectUrl => _redirectUrl;
+
+  @override
+  String get successClientRedirectUrl => _successAuthWebRedirectUrl;
+
+  @override
   @Operation.get()
   Future<Response> redirectHandler(Request request) async {
     final params = request.raw.uri.queryParameters;
     final state = params['state'];
     final code = params['code'];
     await _loginService.validateState(state);
-    final user = await _loginService.getUserAuthStamp(this, code, state);
+    final user =
+        await _loginService.getUserAuthStamp(this, code, state).catchError((e) {
+      throw Exception(e.toString());
+    });
+
+    final tokenPair = await _credentionalService.createTokenPair(user);
+
+    final refreshCookie = Cookie('refresh', tokenPair.refreshToken.value);
+    refreshCookie.httpOnly = true;
+    // refreshCookie.secure = true;
+    refreshCookie.path = '/auth';
+    refreshCookie.maxAge = _credentionalService.refreshTokenExpireTime;
+
+    final csrfCookie = Cookie('csrf', _credentionalService.generateCsrf());
+    csrfCookie.httpOnly = false;
+    // csrfCookie.secure = true;
+
     return Response(
       303,
-      {'Location': successClientRedirectUrl},
+      {
+        'Location': successClientRedirectUrl,
+        'Set-Cookie': [refreshCookie, csrfCookie],
+        'Authorization': tokenPair.accessToken,
+      },
       null,
     );
   }
-
-  @override
-  String get serviceRedirectUrl => _redirectUrl;
-
-  @override
-  String get successClientRedirectUrl => _successAuthWebRedirectUrl;
 
   @override
   @Operation.get()
@@ -87,7 +110,11 @@ class VkAuthProvider implements OAuthProvider {
         .then(
           (response) =>
               VkUserAuthStampResponse.fromJson(response.data).transform(),
-        );
+        )
+        .catchError((e) {
+      throw Exception(e.toString());
+    });
+    ;
     return authStamp
       ..provider = name
       ..state = state;

@@ -15,4 +15,10 @@ class AuthAppChannel extends ApplicationChannel {
   /// Настройка маршрутизатора приложения
   @override
   Controller get entryPoint => getIt.get<Router>();
+
+  @override
+  Future close() {
+    getIt.reset();
+    return super.close();
+  }
 }

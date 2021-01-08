@@ -3,7 +3,7 @@ import 'package:injectable/injectable.dart';
 
 @module
 abstract class RegisterHttpClient {
-  Dio createhttpClient() {
+  Dio createHttpClient() {
     final options = BaseOptions(
       connectTimeout: 1000,
       receiveTimeout: 1000,
